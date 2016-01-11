@@ -7,5 +7,5 @@ setup(
     author='Enric Lluelles',
     author_email='enric@lluel.es',
     packages=['troposphere_sugar'],
-    install_requires=['troposphere>=2.0.0']
+    install_requires=['troposphere>=1.2.0']
 )
