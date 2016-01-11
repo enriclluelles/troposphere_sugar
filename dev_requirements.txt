@@ -1,0 +1,4 @@
+nose
+nose-watch
+unittest2
+zest.releaser
