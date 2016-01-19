@@ -5,15 +5,15 @@ from troposphere import Template
 from random import randint
 
 class Skel(object):
+    def __init__(self, *kwargs):
+        self.__dict__.update(self._defaults())
+        self.__dict__.update(kwargs)
+
     def _defaults(self):
         return {
                 "template": Template(),
                 "_processed": False
                 }
-
-    def __init__(self, *kwargs):
-        self.__dict__.update(self._defaults())
-        self.__dict__.update(kwargs)
 
     def _get_all_decorated(self, ttype):
         return [prop.__get__(self, self.__class__) for prop in self.__class__.__dict__.values() if isinstance(prop, ttype)]

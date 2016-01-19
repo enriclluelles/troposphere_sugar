@@ -1,33 +1,64 @@
-from boto import cloudformation
-from boto import exception
+from __future__ import print_function
+import boto3
+import botocore.exceptions
 
-class TemplateRunner(object):
-    def __init__(self, template, account_name, stack_name):
-        self._account_name = account_name
-        self._stack_name = stack_name
-        self._template_output = template.to_json()
-        self._cf = cloudformation.connect_to_region('eu-west-1',profile_name=account_name)
+class Runner(object):
+    def __init__(self, template, stack_name, params=[], iam_capability=False):
+        self.client = boto3.client('cloudformation')
+        self.stack_name = stack_name
+        self.iam_capability = iam_capability
+        self.params = params
+        self.template_output = template.to_json()
+
+    def find_stack(self):
+        stacks = []
+        try:
+            stacks = self.client.describe_stacks(StackName=self.stack_name)["Stacks"]
+        except botocore.exceptions.ClientError:
+            pass
+        return stacks
+
 
     def perform(self):
-        all_stacks = self.find_stack(self._stack_name)
-        if len(all_stacks) == 0:
+        stacks = self.find_stack()
+        if len(stacks) == 0:
             self.create()
         else:
             self.update()
         self.wait()
 
+    def processed_params(self):
+        res = []
+        for key, value in self.params.iteritems():
+            param_struct = {
+                    "ParameterKey": key,
+                    "ParameterValue": value,
+                    "UsePreviousValue": False
+            }
+            res.append(param_struct)
+        return res
+
+    def capabilities(self):
+        if self.iam_capability:
+            return ["CAPABILITY_IAM"]
+        else:
+            return []
+
+    def stack_operation_args(self):
+        return {
+                "StackName": self.stack_name,
+                "TemplateBody": self.template_output,
+                "Parameters": self.processed_params(),
+                "Capabilities": self.capabilities()
+                }
+
+
     def create(self):
-        self._cf.create_stack(self._stack_name, self._template_output)
+        print(self.stack_operation_args())
+        self.client.create_stack(**self.stack_operation_args())
 
     def update(self):
-        try:
-            self._cf.update_stack(self._stack_name, self._template_output)
-        except exception.BotoServerError as e:
-            if e.message != "No updates are to be performed.":
-                print("\nError: {0}".format(e.message))
-                raise
-            else:
-                print("\nSuccess: {0}".format(e.message))
+        self.client.update_stack(**self.stack_operation_args())
 
     def wait(self):
         stack_status = ""
@@ -36,11 +67,9 @@ class TemplateRunner(object):
             count += 1
             print(".", end="")
             time.sleep(5)
-            stack_status = self._cf.describe_stacks(stack_name_or_id=self._stack_name)[0].stack_status
+            stacks = self.client.describe_stacks(Stack=self.stack_name)
+            stack_status = stacks["Stacks"][0]["StackStatus"]
         if count == 20:
             print("\nError: {0}".format(stack_status))
             return
         print("\nSuccess: {0}".format(stack_status))
-
-    def find_stack(self, stack_name):
-         return [stack for stack in self._cf.describe_stacks() if stack.stack_name == stack_name]
