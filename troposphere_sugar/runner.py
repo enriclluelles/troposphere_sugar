@@ -1,5 +1,7 @@
 from __future__ import print_function
 import boto3
+import sys
+import time
 import botocore.exceptions
 
 class Runner(object):
@@ -66,8 +68,9 @@ class Runner(object):
         while stack_status not in ["UPDATE_COMPLETE", "CREATE_COMPLETE"] and count < 10:
             count += 1
             print(".", end="")
+            sys.stdout.flush()
             time.sleep(5)
-            stacks = self.client.describe_stacks(Stack=self.stack_name)
+            stacks = self.client.describe_stacks(StackName=self.stack_name)
             stack_status = stacks["Stacks"][0]["StackStatus"]
         if count == 20:
             print("\nError: {0}".format(stack_status))
