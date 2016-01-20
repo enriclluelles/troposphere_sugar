@@ -7,6 +7,6 @@ setup(
     author='Enric Lluelles',
     author_email='enric@lluel.es',
     url="https://github.com/enriclluelles/troposphere_sugar",
-    packages=['troposphere_sugar'],
+    packages=['troposphere_sugar', 'troposphere_sugar.decorators'],
     install_requires=['troposphere>=1.2.0']
 )
