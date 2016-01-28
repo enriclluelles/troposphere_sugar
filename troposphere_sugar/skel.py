@@ -15,8 +15,14 @@ class Skel(object):
                 "_processed": False
                 }
 
+    def _get_all_decorated_for_class(self, clazz, ttype):
+        all = clazz.__dict__.values()
+        for base_clazz in clazz.__bases__:
+            all += self._get_all_decorated_for_class(base_clazz, ttype)
+        return [prop for prop in all if isinstance(prop, ttype)]
+
     def _get_all_decorated(self, ttype):
-        return [prop.__get__(self, self.__class__) for prop in self.__class__.__dict__.values() if isinstance(prop, ttype)]
+        return [prop.__get__(self, self.__class__) for prop in self._get_all_decorated_for_class(self.__class__, ttype)]
 
     @property
     def cfparams(self):
