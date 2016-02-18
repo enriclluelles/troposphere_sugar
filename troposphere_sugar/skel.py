@@ -5,7 +5,7 @@ from troposphere import Template
 from random import randint
 
 class Skel(object):
-    def __init__(self, *kwargs):
+    def __init__(self, **kwargs):
         self.__dict__.update(self._defaults())
         self.__dict__.update(kwargs)
 
