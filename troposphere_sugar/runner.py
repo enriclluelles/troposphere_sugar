@@ -5,11 +5,12 @@ import time
 import botocore.exceptions
 
 class Runner(object):
-    def __init__(self, template, stack_name, params=[], iam_capability=False):
-        self.client = boto3.client('cloudformation')
+    def __init__(self, template, stack_name, params=[], iam_capability=False, session=None):
         self.stack_name = stack_name
         self.iam_capability = iam_capability
         self.params = params
+        self.session = session if session else boto3.session.Session()
+        self.client = session.client('cloudformation')
         self.template_output = template.to_json()
 
     def find_stack(self):
