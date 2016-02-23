@@ -61,7 +61,11 @@ class Runner(object):
         self.client.create_stack(**self.stack_operation_args())
 
     def update(self):
-        self.client.update_stack(**self.stack_operation_args())
+        try:
+            self.client.update_stack(**self.stack_operation_args())
+        except botocore.exceptions.ClientError, e:
+            if "No updates are to be performed" not in str(e):
+                raise
 
     def wait(self):
         stack_status = ""
