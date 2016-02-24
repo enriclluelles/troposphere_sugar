@@ -41,7 +41,7 @@ class Command(object):
         return result
 
     @staticmethod
-    def param_to_dict(param):
+    def param_to_dict(p):
         default = p.properties.get("Default", None)
         required = not bool(default)
         help=p.properties["Description"]
@@ -57,4 +57,4 @@ class Command(object):
             dashed = camelcase_to_dashed(p.title)
             self.args_to_params[dashed]=p.title
             dashed_arg = "--{}".format(dashed)
-            self.parser.add_argument(dashed_arg, **param_to_dict(p))
+            self.parser.add_argument(dashed_arg, **self.param_to_dict(p))

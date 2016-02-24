@@ -10,7 +10,7 @@ class Runner(object):
         self.iam_capability = iam_capability
         self.params = params
         self.session = session if session else boto3.session.Session()
-        self.client = session.client('cloudformation')
+        self.client = self.session.client('cloudformation')
         self.template_output = template.to_json()
 
     def find_stack(self):
