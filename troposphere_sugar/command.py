@@ -25,6 +25,10 @@ class Command(object):
             self._parser = argparse.ArgumentParser(description=self.template.description)
         return self._parser
 
+    @parser.setter
+    def parser(self, value):
+        self._parser = value
+
     @property
     def parsed_args(self):
         self.set_params_args_in_parser()
