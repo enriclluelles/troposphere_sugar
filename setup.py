@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='troposphere_sugar',
-    version='0.0.1',
+    version='0.0.2',
     description='Common utilities on top of troposphere and boto for ease of clouformation template creation',
     author='Enric Lluelles',
     author_email='enric@lluel.es',
