@@ -57,7 +57,8 @@ class Command(object):
         if not getattr(self, "args_to_params", None):
             self.args_to_params = {}
 
-        for p in self.cfparams:
+        for param in self.cfparams:
+            p = param[0]
             dashed = camelcase_to_dashed(p.title)
             self.args_to_params[dashed]=p.title
             dashed_arg = "--{}".format(dashed)
