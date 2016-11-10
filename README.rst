@@ -11,7 +11,6 @@ Through pip::
 
     $ pip install troposphere_sugar
 
-Through easy_install (you need to clone the repo
-)::
+Through easy_install (you need to clone the repo)::
 
     # python setup.py install
