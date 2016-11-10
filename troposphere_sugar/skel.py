@@ -1,6 +1,5 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-from decorators import *
+from troposphere_sugar.decorators import *
 from troposphere import Template
 from random import randint
 
@@ -16,7 +15,7 @@ class Skel(object):
                 }
 
     def _get_all_decorated_for_class(self, clazz, ttype):
-        all = clazz.__dict__.values()
+        all = list(clazz.__dict__.values())
         for base_clazz in clazz.__bases__:
             all += self._get_all_decorated_for_class(base_clazz, ttype)
         return [prop for prop in all if isinstance(prop, ttype)]

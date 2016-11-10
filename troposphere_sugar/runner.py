@@ -63,7 +63,7 @@ class Runner(object):
     def update(self):
         try:
             self.client.update_stack(**self.stack_operation_args())
-        except botocore.exceptions.ClientError, e:
+        except botocore.exceptions.ClientError as e:
             if "No updates are to be performed" not in str(e):
                 raise
 

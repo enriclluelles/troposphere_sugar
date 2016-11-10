@@ -1,7 +1,6 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-from skel import Skel
-from runner import Runner
+from troposphere_sugar.skel import Skel
+from troposphere_sugar.runner import Runner
 import argparse
 import re
 
