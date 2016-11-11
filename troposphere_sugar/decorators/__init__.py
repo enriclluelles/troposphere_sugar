@@ -24,6 +24,8 @@ class cfbase(cache):
         return self.cached_result
 
 class cflookup(object):
+    cache = {}
+
     @classmethod
     def get_default_session(cls):
         if not hasattr(cls, '_default_session'):
@@ -38,7 +40,7 @@ class cflookup(object):
             s = self.__class__.get_default_session()
         else:
             s = session
-        self.cf_client = s.client("cloudformation")
+        self.session = s
 
     def __call__(self, f):
         if not isinstance(f, cfparam):
@@ -50,16 +52,28 @@ class cflookup(object):
     def __get__(self, inst, owner):
         if not hasattr(self, 'cached_result'):
             res = self._param.__get__(inst, inst.__class__)
-            res.Default = self._obtain_default()
+            res.Default = self._get_default()
             self.cached_result = res
         return self.cached_result
 
-    def _obtain_default(self):
-        stack = self.cf_client.describe_stacks(StackName=self.stack_name)["Stacks"][0]
-        outputs = stack["Outputs"]
+    def _get_default(self):
+        outputs = self.__class__.get_ouputs(self.session, self.stack_name)
         m = map(lambda o: o["OutputValue"], filter(lambda o: o["OutputKey"] == self.output_name, outputs))
-        print(m)
         return next(m, '')
+
+    @classmethod
+    def get_ouputs(self, session, stack):
+        stacks_data = self.cache.get(session, None)
+        if stacks_data is None:
+            stacks_data = {}
+            self.cache[session] = stacks_data
+        outputs = stacks_data.get(stack, None)
+        if outputs is None:
+            client = session.client("cloudformation")
+            outputs = client.describe_stacks(StackName=stack)["Stacks"][0]["Outputs"]
+            stacks_data[stack] = outputs
+        return outputs
+
 
 
 
