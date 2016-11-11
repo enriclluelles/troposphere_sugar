@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 import boto3
+try:
+    from itertools import imap as map, filter
+except ImportError:
+    pass
+
 class cache(object):
     def __init__(self, func):
         self.original_get = func
