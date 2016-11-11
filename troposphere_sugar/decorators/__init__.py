@@ -17,6 +17,22 @@ class cfbase(cache):
             self.cached_result = self.fget(inst)
         return self.cached_result
 
+class cflookup(object):
+    def __init__(self, stack_name, output_name):
+        self.stack_name = stack_name
+        self.output_name = output_name
+
+    def __call__(self, f):
+        if not isinstance(f, cfparam):
+            raise Exception("You can only wrap @cfparam decorated objects with @cflookup")
+        self._param = f
+        return self
+
+    def __get__(self, inst, owner):
+        res = self._param.__get__(inst, inst.__class__)
+        return res
+
+
 class cfresource(cfbase):
     pass
 

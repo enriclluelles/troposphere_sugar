@@ -26,7 +26,8 @@ class Skel(object):
 
     @property
     def cfparams(self):
-        return self._get_all_decorated(cfparam)
+        r = self._get_all_decorated(cfparam)
+        return r
 
     @property
     def cfresources(self):
