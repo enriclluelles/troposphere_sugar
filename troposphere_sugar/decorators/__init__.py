@@ -28,12 +28,18 @@ class cflookup(object):
     def __init__(self, stack_name, output_name, session=None):
         self.stack_name = stack_name
         self.output_name = output_name
-        self.client = session.client("cloudformation") if session is not None else get_default_session.client("cloudformation")
+        s = None
+        if session is None:
+            s = self.__class__.get_default_session()
+        else:
+            s = session
+        self.cf_client = s.client("cloudformation")
 
     def __call__(self, f):
         if not isinstance(f, cfparam):
             raise Exception("You can only wrap @cfparam decorated objects with @cflookup")
         self._param = f
+        self.fget = f.fget
         return self
 
     def __get__(self, inst, owner):
@@ -44,8 +50,11 @@ class cflookup(object):
         return self.cached_result
 
     def _obtain_default(self):
-        stack = self.cf_client.describe_stacks("StackName")["Stacks"][0]
-        return stack["Outputs"][self.output_name]
+        stack = self.cf_client.describe_stacks(StackName=self.stack_name)["Stacks"][0]
+        outputs = stack["Outputs"]
+        m = map(lambda o: o["OutputValue"], filter(lambda o: o["OutputKey"] == self.output_name, outputs))
+        print(m)
+        return next(m, '')
 
 
 

@@ -14,7 +14,7 @@ class Skel(object):
                 "_processed": False
                 }
 
-    def _get_all_decorated_for_class(self, clazz, ttype):
+    def _get_all_decorated_for_class(self, clazz, *ttypes):
         all = list(clazz.__dict__.values())
         for base_clazz in clazz.__bases__:
             all += self._get_all_decorated_for_class(base_clazz, ttype)
