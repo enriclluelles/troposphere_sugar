@@ -4,6 +4,7 @@ from troposphere import *
 from troposphere.route53 import *
 
 class MyCf(Skel):
+    @cflookup('stack', 'output')
     @cfparam
     def hostedZone(self):
         return Parameter("hostedZone",
@@ -54,4 +55,5 @@ class MyCf(Skel):
 
 
 cf = MyCf()
-print(cf.output)
+
+cf.process()

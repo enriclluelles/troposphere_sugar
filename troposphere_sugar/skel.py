@@ -14,19 +14,20 @@ class Skel(object):
                 "_processed": False
                 }
 
-    def _get_all_decorated_for_class(self, clazz, ttype):
+    def _get_all_decorated_for_class(self, clazz, *ttypes):
         all = list(clazz.__dict__.values())
         for base_clazz in clazz.__bases__:
-            all += self._get_all_decorated_for_class(base_clazz, ttype)
-        return [prop for prop in all if isinstance(prop, ttype)]
+            all += self._get_all_decorated_for_class(base_clazz, *ttypes)
+        return [prop for prop in all if any(isinstance(prop, ttype) for ttype in ttypes)]
 
-    def _get_all_decorated(self, ttype):
-        ds = [prop for prop in self._get_all_decorated_for_class(self.__class__, ttype)]
+    def _get_all_decorated(self, *ttypes):
+        ds = [prop for prop in self._get_all_decorated_for_class(self.__class__, *ttypes)]
         return [[prop.__get__(self, self.__class__), prop.fget.__name__] for prop in ds]
 
     @property
     def cfparams(self):
-        return self._get_all_decorated(cfparam)
+        r = self._get_all_decorated(cfparam, cflookup)
+        return r
 
     @property
     def cfresources(self):
